@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Age Calculator</title>
+    <style>
+        /* Basic styling for the entire page */
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #e0f7fa;
+            background: linear-gradient(135deg, #e0f7fa, #80deea);
+        }
+        
+        /* Styling for the calculator container */
+
+        .age-calculator {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        /* Header styling */
+
+        .age-calculator h1 {
+            margin-bottom: 20px;
+            font-size: 28px;
+            color: #004d40;
+        }
+        
+        /* Form container styling */
+
+        .age-calculator form {
+            margin-bottom: 20px;
+        }
+        
+        /* Styling for the input container */
+
+        .date-picker {
+            margin-bottom: 15px;
+        }
+        
+        /* Styling for the input field */
+
+        .date-picker input {
+            padding: 12px;
+            width: calc(100% - 24px);
+            border: 2px solid #80cbc4;
+            border-radius: 6px;
+            font-size: 16px;
+            color: #004d40;
+            background-color: #e0f2f1;
+        }
+        
+        /* Focus effect for the input field */
+
+        .date-picker input:focus {
+            outline: none;
+            border-color: #004d40;
+        }
+        
+        /* Styling for the submit button */
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #004d40;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        /* Hover effect for the button */
+
+        button:hover {
+            background-color: #00796b;
+        }
+        
+        /* Styling for the result text */
+
+        .result {
+            font-size: 18px;
+            color: #004d40;
+            font-weight: bold;
+        }
+        
+        /* Styling for error messages */
+
+        .error {
+            color: #d32f2f;
+            font-size: 14px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/luxon/build/global/luxon.min.js"></script>
+</head>
+<body>
+    <div class="age-calculator">
+        <h1>Age Calculator</h1>
+        <form id="ageForm">
+            <div class="date-picker">
+
+                <!-- Input field for the birthdate -->
+
+                <label for="birthdate">Select Your Birthdate:</label>
+                <input type="text" id="birthdate" placeholder="YYYY-MM-DD">
+            </div>
+
+            <!-- Submit button for the form -->
+
+            <button type="submit">Calculate Age</button>
+        </form>
+
+        <!-- Div for displaying the calculated result -->
+
+        <div class="result" id="result"></div>
+
+        <!-- Div for displaying error messages -->
+
+        <div class="error" id="error"></div>
+    </div>
+
+    <script>
+
+        // Import Luxon DateTime library
+
+        const DateTime = luxon.DateTime;
+
+        // Add an event listener to the form for handling submit events
+
+        document.getElementById("ageForm").addEventListener("submit", function(e) {
+            e.preventDefault(); // Prevent the default form submission behavior
+
+            // Get references to input, result, and error elements
+
+            const birthdateInput = document.getElementById("birthdate").value;
+            const resultDiv = document.getElementById("result");
+            const errorDiv = document.getElementById("error");
+
+            // Clear previous results and errors
+
+            resultDiv.textContent = "";
+            errorDiv.textContent = "";
+
+            // Basic validation for the input format (YYYY-MM-DD)
+
+            if (!/\d{4}-\d{2}-\d{2}/.test(birthdateInput)) {
+                errorDiv.textContent = "Please enter a valid date in YYYY-MM-DD format.";
+                return;
+            }
+
+            // Parse the input birthdate using Luxon
+
+            const birthdate = DateTime.fromISO(birthdateInput);
+
+            // Check if the birthdate is valid and in the past
+
+            if (!birthdate.isValid || birthdate > DateTime.now()) {
+                errorDiv.textContent = "Please enter a valid past date.";
+                return;
+            }
+
+            // Calculate the age difference in years, months, and days
+
+            const now = DateTime.now();
+            const diff = now.diff(birthdate, ["years", "months", "days"]).toObject();
+
+            // Display the calculated age in the result div
+
+            resultDiv.textContent = `Your age is ${Math.floor(diff.years)} years, ${Math.floor(diff.months)} months, and ${Math.floor(diff.days)} days.`;
+        });
+
+        // Add a simple datepicker to the input field (basic implementation)
+
+        document.getElementById("birthdate").addEventListener("focus", function() {
+            if (!this.datepickerInitialized) {
+                this.datepickerInitialized = true;
+                this.type = "date"; // Fallback to native date input if supported
+                this.focus(); // Refocus the input field
+            }
+        });
+
+    </script>
+    
+</body>
+
+</html>
